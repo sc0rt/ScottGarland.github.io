@@ -1,0 +1,35 @@
+
+/* h1{color:red}
+p{color:blue}
+div{border-width:10px ; border-color:blue}
+em{color:yellow} */
+
+a:link {
+    text-decoration:underline;
+    color:blue
+}
+
+a:visited {
+    text-decoration:underline;
+    color:purple
+}
+
+a:active {
+    background-color:yellow
+}
+
+a:hover {
+    text-decoration:none;
+    font-weight:bold
+}
+
+table{
+    border: solid 5px black;
+}
+th{
+    color:blue;
+}
+
+tr{
+    background-color:orange;
+}
