@@ -1,0 +1,78 @@
+
+#container{
+  /*container has to be relative so that the canvases can be positioned absolutly within the container
+  (as opposed to absolutley withing the whole document*/
+  position: relative;
+  margin: auto;
+  width: 70%;
+  height: 70%;
+}
+
+#valueForm{
+  background-color: white;
+  border: 1px solid grey;
+  width: 80%;
+  margin-right:auto;
+  margin-left: auto;
+  margin-top: 5%;
+
+}
+
+#title{
+  border: 0;
+}
+
+ul{
+  list-style-type: none;
+}
+
+li{
+  margin-top: 10;
+}
+
+li.buttonList{
+  display: inline-block;
+  margin: 10px;
+}
+
+
+.canvas{
+  position: absolute;
+  margin: auto;
+  top: 20;
+  border:black 3px solid;
+  box-shadow: 1px 1px 2px #585858, -1px -1px 2px #585858, -1px 1px 2px #585858, 1px -1px 2px #585858;
+}
+
+.leftSide{
+  height: 100%;
+  width: 40%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  left: 0;
+
+}
+
+.rightSide{
+  height: 100%;
+  width: 60%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  right: 0;
+}
+
+body{
+  background-image: url("../img/background 2.jpg");
+  background-repeat: repeat;
+}
+
+#canvas2{
+  background-color: white;
+  background-image: url("../img/pendulum diagram.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
