@@ -446,7 +446,6 @@ function rk4() {
   var den2 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
 
   var j1 = (num8 * (num9 + num10 + num11)) / den2;
-  
 
   // calculating values at t + h/2
   // for k2, j2-----------------------------------------------------
@@ -498,8 +497,8 @@ function rk4() {
   // This is for the last k4 and j4. Evaluated at time t + h ----------------------------------
   w1Temp += k1;
   w2Temp += j1;
-  ang1Temp += w1; // might adjust by w1Temp
-  ang2Temp += w2; // might adjust by w2Temp
+  ang1Temp += w1;
+  ang2Temp += w2;
   
   var num15 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
   var num16 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
