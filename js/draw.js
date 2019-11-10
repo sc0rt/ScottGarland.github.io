@@ -5,11 +5,14 @@ var canvas = document.getElementById('canvas2');
 var ctx2 = canvas.getContext('2d');
 
 var sphere = document.createElement('img');
+sphere.src = "../img/sphere.png"; //default image
+
 var color = document.getElementById('color'); //the color the user selects in dropdown menu
 var startButton = document.getElementById('start');
 var randomButton = document.getElementById('random');
 var resetButton = document.getElementById('reset');
 var pauseButton = document.getElementById('pause');
+var text = document.getElementById('pause');
 var planetSelect = document.getElementById('planet');
 pauseButton.disabled = true; //disables pause button until start is pressed
 
@@ -51,10 +54,13 @@ var lastY = initialLastY;
 
 var animation;
 
-// event listeners for buttons
-startButton.addEventListener('click', setup);
+//when the images are loaded, the buttons will work.  Prevents image flickering at the beginning
+sphere.onload = function(){
+  // event listeners for buttons
+  startButton.addEventListener('click', setup);
 
-randomButton.addEventListener('click', randomSetup);
+  randomButton.addEventListener('click', randomSetup);
+}
 
 resetButton.addEventListener('click', ()=>{
   location.reload();
@@ -62,13 +68,16 @@ resetButton.addEventListener('click', ()=>{
 
 pauseButton.addEventListener('click', (e)=>{
   e.preventDefault();
-  if(pauseButton.innerText == 'Pause'){
+
+  if(text.innerHTML == 'Pause'){
     cancelAnimationFrame(animation);
-    pauseButton.innerText = 'Resume';
+    text.innerHTML = 'Resume';
+    text.className= "btnText";
   }
   else{
     update();
-    pauseButton.innerText = 'Pause';
+    text.innerHTML = 'Pause';
+    text.className= "btnText"
   }
 });
 
@@ -79,15 +88,13 @@ function validateForm(){
 
   //Changes all border clors to black in case the form was validated multiple times
   for(i = 0; i < inputs.length; i++ ){
-    inputs[i].style.borderColor = 'gray';
-    inputs[i].style.borderWidth = '1px';
+    inputs[i].style.border = '1.5px solid #282828';
   }
 
   //check if any field is blank
   for(i = 0; i < inputs.length; i++ ){
     if(inputs[i].value == ''){
-      inputs[i].style.borderColor = '#ff3333'; //changes wrong input border to red
-      inputs[i].style.borderWidth = '1px';
+      inputs[i].style.border = '1.5px solid #cc0000'; //changes wrong input border to red
       valid = false;
     }
   }
@@ -100,8 +107,7 @@ function validateForm(){
   for(i = 0; i < inputs.length; i++ ){
     if(inputs[i].getAttribute('id') != 'ang1' && inputs[i].getAttribute('id') != 'ang2' ){
       if(inputs[i].value < 0){
-        inputs[i].style.borderColor = '#ff3333'; //changes wrong input border to red
-        inputs[i].style.borderWidth = '1px';
+        inputs[i].style.border = '1.5px solid #cc0000'; //changes wrong input border to red
         valid = false;
       }
     }
@@ -121,7 +127,8 @@ function setup(e){
   if(!valid){return;}
 
   cancelAnimationFrame(animation);
-  pauseButton.innerText = 'Pause';
+  text.innerHTML = 'Pause';
+  text.className = "btnText";
   pauseButton.disabled = false;
   loadSphere();
   resetValues();
@@ -134,8 +141,16 @@ function setup(e){
 function randomSetup(e){
   e.preventDefault();
   cancelAnimationFrame(animation);
-  pauseButton.innerText = 'Pause';
+  text.innerHTML = 'Pause';
+  text.className = "btnText";
   pauseButton.disabled = false;
+
+  var inputs = document.forms["valueForm"].elements['input'];
+  //Changes all border clors to black in case the form was validated multiple times
+  for(i = 0; i < inputs.length; i++ ){
+    inputs[i].style.border = '1.5px solid #282828';
+  }
+
   setRandomValues();
   loadSphere();
   drawBackground();
@@ -145,6 +160,7 @@ function randomSetup(e){
 
 function update(){
   calculate();
+  //rk4();
   ctx.clearRect(0 - w/2, 0 - h/2, w, h);
   drawLines();
   drawSphere(x1, y1);
@@ -153,7 +169,7 @@ function update(){
   if (document.getElementById('traceSwitch').checked) {
     drawTrace();
   }
-  
+
   setLast();
   animation = requestAnimationFrame(update);
 }
@@ -204,38 +220,38 @@ function calculate(){
 
 // selects the appropriate gravitational acceleration based on user planet selection-----------------------------------------------
 function planetChoice() {
-  
+
   // indeces for planets in order: 0 = Mercury ... 7 = Neptune
   if (planetSelect.selectedIndex == 0){
     g = parseFloat(document.getElementById('mercury').value) / 3600;
     return g;
   }
-  if (planetSelect.selectedIndex == 1){
+  else if (planetSelect.selectedIndex == 1){
     g = parseFloat(document.getElementById('venus').value) / 3600;
     return g;
   }
-  if (planetSelect.selectedIndex == 2){
+  else if (planetSelect.selectedIndex == 2){
     g = parseFloat(document.getElementById('earth').value) / 3600;
     return g;
   }
-  if (planetSelect.selectedIndex == 3) {
+  else if (planetSelect.selectedIndex == 3) {
     g = parseFloat(document.getElementById('mars').value) / 3600;
     return g;
-  }  
-  if (planetSelect.selectedIndex == 4){
+  }
+  else if (planetSelect.selectedIndex == 4){
     g = parseFloat(document.getElementById('jupiter').value) / 3600;
     return g;
   }
 
-  if (planetSelect.selectedIndex == 5){
+  else if (planetSelect.selectedIndex == 5){
     g = parseFloat(document.getElementById('saturn').value) / 3600;
     return g;
   }
-  if (planetSelect.selectedIndex == 6){
+  else if (planetSelect.selectedIndex == 6){
     g = parseFloat(document.getElementById('uranus').value) / 3600;
     return g;
   }
-  if (planetSelect.selectedIndex == 7){
+  else if (planetSelect.selectedIndex == 7){
     g = parseFloat(document.getElementById('neptune').value) / 3600;
     return g;
   }
@@ -260,19 +276,6 @@ function setRandomValues(){
   g = planetChoice();
   lastX = initialLastX;
   lastY = initialLastY;
-
-  // set random colour
-  /* this snippet mostly works except occaisionally when the random button is clicked it freezes the simulation
-   I'm guessing it goes to an index out of range
-   (next day update: seems to be fine now. lemme know if it causes trouble)
-   In randomSetup() I swapped the places of setRandomValues() and loadSphere()
-   because when this code ran the trace and ball colours didn't correspond */
-  
-  var colourSource = ["../img/sphere red.png","../img/sphere orange.png","../img/sphere yellow.png","../img/sphere.png","../img/sphere green.png","../img/sphere purple.png","../imag/sphere pink.png"];
-  var colours = ["red","orange","yellow","blue","green","violet","pink"];
-  var randomIndex = Math.floor(Math.random() * colours.length);
-  sphere.src = colourSource[randomIndex];
-  color.value = colours[randomIndex];
 
   // displaying the random value to 2 decimal places into the html form
   document.getElementById('m1').value = m1.toFixed(2);
@@ -407,4 +410,59 @@ function resetValues(){
   g = planetChoice(); // gravitational constant (scaled to 60 fps)
   lastX = initialLastX;
   lastY = initialLastY;
+}
+
+//Fourth Order Runge-Kutta Method for approximating the next iteration---------------------------------------------------------------
+function rk4() {
+
+  // next iteration for w1-----------------------------------------
+  var num1 = -g * (2 * m1 + m2) * Math.sin(ang1);
+  var num2 = -m2 * g * Math.sin(ang1-2*ang2);
+  var num3 = -2*Math.sin(ang1-ang2)*m2;
+  var num4 = w2*w2*r2+w1*w1*r1*Math.cos(ang1-ang2);
+  var den1 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+
+  var k1 = (num1 + num2 + num3 * num4) / den1;
+  var num5 = w2*w2*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1-ang2);
+  var k2 = (0.5) * (num1 + num2 + num3 * num5) / den1;
+  var num6 = w2*w2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1-ang2);
+  var k3 = (0.5) * (num1 + num2 + num3 * num6) / den1;
+  var num7 = w2*w2*r2+(w1 + k3)*(w1 + k3)*r1*Math.cos(ang1-ang2);
+  var k4 = (num1 + num2 + num3 * num7) / den1;
+
+  // next iteration for w2----------------------------------------
+  var num8 = 2 * Math.sin(ang1-ang2);
+  var num9 = (w1*w1*r1*(m1+m2));
+  var num10 = g * (m1 + m2) * Math.cos(ang1);
+  var num11 = w2*w2*r2*m2*Math.cos(ang1-ang2);
+  var den2 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+
+  var j1 = (num8 * (num9 + num10 + num11)) / den2;
+  var num12 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1-ang2);
+  var j2 = (0.5) * (num8 * (num9 + num10 + num12)) / den2;
+  var num13 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1-ang2);
+  var j3 = (0.5) * (num8 * (num9 + num10 + num13)) / den2;
+  var num14 = (w2 + j3)*(w2 + j3)*r2*m2*Math.cos(ang1-ang2);
+  var j4 = (num8 * (num9 + num10 + num14)) / den2;
+
+  //get position based on angle
+  x1 = r1 * Math.sin(ang1);
+  y1 = (-r1 * Math.cos(ang1));
+  x2 = x1 + r2 * Math.sin(ang2);
+  y2 = (y1 - r2 * Math.cos(ang2));
+
+  //reverse the y-coordinates so that the pendulum is drawn in the right place
+  y1 *= -1;
+  y2 *= -1;
+
+  //multiply by 100 to scale the position in meters to pixels for aesthetics
+  x1 *= 100;
+  y1 *= 100;
+  x2 *= 100;
+  y2 *= 100;
+
+  w1 += (1 / 6) * (k1 + 2*k2 + 2*k3 + k4);
+  w2 += (1 / 6) * (j1 + 2*j2 + 2*j3 + j4);
+  ang1 += w1;
+  ang2 += w2;
 }

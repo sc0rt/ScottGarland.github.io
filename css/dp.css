@@ -9,8 +9,9 @@
 }
 
 #valueForm{
-  background-color: white;
-  border: 1px solid grey;
+  background-color: #505050;
+  border: 2px solid #52452d;
+  border-radius: 20px;
   width: 80%;
   margin-right:auto;
   margin-left: auto;
@@ -22,12 +23,25 @@
   border: 0;
 }
 
+#formTitle{
+  text-shadow:  1px 1px 1px #101010, 1px -1px 1px #101010, -1px 1px 1px #101010, -1px -1px 1px #101010;
+  font-size: 2.5em;
+  padding-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 ul{
   list-style-type: none;
 }
 
 li{
   margin-top: 10;
+  color: #5F8A6F;
+  text-shadow:  1px 1px 0.5px #101010, 1px -1px 0.5px #101010, -1px 1px 0.5px #101010, -1px -1px 0.5px #101010;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 li.buttonList{
@@ -35,15 +49,46 @@ li.buttonList{
   margin: 10px;
 }
 
+legend{
+  color: #947d51;
+  font-size: 1.7em;
+  text-shadow:  1px 1px 0.5px #101010, 1px -1px 0.5px #101010, -1px 1px 0.5px #101010, -1px -1px 0.5px #101010;
+  font-weight: 600;
+}
+
+input{
+  background-color: #D3D3D3;
+  border: 1.5px solid #282828;
+  margin-left: 2%;
+}
+
+select option{
+  background: #D3D3D3;
+
+}
+select {
+  background: #D3D3D3;
+  margin-left: 2%;
+}
 
 .canvas{
   position: absolute;
   margin: auto;
   top: 20;
-  border:black 3px solid;
+  border: #52452d 3px solid;
   box-shadow: 1px 1px 2px #585858, -1px -1px 2px #585858, -1px 1px 2px #585858, 1px -1px 2px #585858;
 }
 
+.general{
+  margin-bottom: 10;
+  margin-top: 10;
+  margin-left: 40;
+  color: #5F8A6F;
+  text-shadow:  1px 1px 0.5px #101010, 1px -1px 0.5px #101010, -1px 1px 0.5px #101010, -1px -1px 0.5px #101010;
+  font-size: 1.2em;
+  font-weight: 600;
+
+}
 .leftSide{
   height: 100%;
   width: 40%;
@@ -53,6 +98,34 @@ li.buttonList{
   overflow-x: hidden;
   left: 0;
 
+}
+
+#buttons{
+  padding-left: 0;
+  padding-top: 5%;
+}
+#buttonWrap{
+  display: table;
+  margin: 0 auto;
+}
+
+button{
+  width: 85px;
+  height: 35px;
+  border-width: 1;
+  border-color: #202020;
+  border-radius: 5px;
+  background-color: #6B5A3F;
+
+}
+
+.btnText{
+  font-family: 'arial';
+  font-weight: bold;
+  font-size: 18;
+  text-align: center;
+  color: #87ab94/*#5F8A6F*/;
+  text-shadow:  1px 1px 0.5px #101010, 1px -1px 0.5px #101010, -1px 1px 0.5px #101010, -1px -1px 0.5px #101010;
 }
 
 .rightSide{
@@ -66,7 +139,7 @@ li.buttonList{
 }
 
 body{
-  background-image: url("../img/background 2.jpg");
+  background-image: url("../img/dark_wood.png");
   background-repeat: repeat;
 }
 
