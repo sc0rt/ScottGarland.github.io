@@ -425,9 +425,11 @@ function resetValues(){
 //Fourth Order Runge-Kutta Method for approximating the next iteration---------------------------------------------------------------
 function rk4() {
   
-  let w1Temp = w1, w2Temp = w2, ang1Temp = ang1, ang2Temp = ang2;
+  let w1Temp = w1, w2Temp = w2, ang1Temp = ang1, ang2Temp = ang2; // for k4, j4
+  let w1TempHalf1 = w1, w2TempHalf1 = w2, ang1TempHalf1 = ang1, ang2TempHalf1 = ang2; // for k2, j2
+  let w1TempHalf2 = w1, w2TempHalf2 = w2, ang1TempHalf2 = ang1, ang2TempHalf2 = ang2; // for k3, j3
 
-  // next iteration for w1-----------------------------------------
+  // next iteration for w1------------------------------------------
   var num1 = -g * (2 * m1 + m2) * Math.sin(ang1);
   var num2 = -m2 * g * Math.sin(ang1-2*ang2);
   var num3 = -2*Math.sin(ang1-ang2)*m2;
@@ -435,12 +437,8 @@ function rk4() {
   var den1 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
 
   var k1 = (num1 + num2 + num3 * num4) / den1;
-  var num5 = w2*w2*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1-ang2);
-  var k2 = (0.5) * (num1 + num2 + num3 * num5) / den1; // maybe by a factor of 1.5 since it's evaluated at t + h/2
-  var num6 = w2*w2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1-ang2);
-  var k3 = (0.5) * (num1 + num2 + num3 * num6) / den1; // maybe by a factor of 1.5 since it's evaluated at t + h/2
 
-  // next iteration for w2----------------------------------------
+  // next iteration for w2------------------------------------------
   var num8 = 2 * Math.sin(ang1-ang2);
   var num9 = (w1*w1*r1*(m1+m2));
   var num10 = g * (m1 + m2) * Math.cos(ang1);
@@ -448,13 +446,56 @@ function rk4() {
   var den2 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
 
   var j1 = (num8 * (num9 + num10 + num11)) / den2;
-  var num12 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1-ang2);
-  var j2 = (0.5) * (num8 * (num9 + num10 + num12)) / den2; // maybe by a factor of 1.5 since it's evaluated at t + h/2
-  var num13 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1-ang2);
-  var j3 = (0.5) * (num8 * (num9 + num10 + num13)) / den2; // maybe by a factor of 1.5 since it's evaluated at t + h/2
+  
+
+  // calculating values at t + h/2
+  // for k2, j2-----------------------------------------------------
+  w1TempHalf1 += 0.5*k1;
+  w2TempHalf1 += 0.5*j1;
+  ang1TempHalf1 += 0.5*w1;
+  ang2TempHalf1 += 0.5*w2;
+  
+  var num21 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf1);
+  var num22 = -m2 * g * Math.sin(ang1TempHalf1-2*ang2TempHalf1);
+  var num23 = -2*Math.sin(ang1TempHalf1-ang2TempHalf1)*m2;
+  var num5 = w2TempHalf1*w2TempHalf1*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den5 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+
+  var k2 = (num21 + num22 + num23 * num5) / den5;
+
+  var num28 = 2 * Math.sin(ang1TempHalf1-ang2TempHalf1);
+  var num29 = (w1TempHalf1*w1TempHalf1*r1*(m1+m2));
+  var num30 = g * (m1 + m2) * Math.cos(ang1TempHalf1);
+  var num12 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den6 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+
+  var j2 = (num28 * (num29 + num30 + num12)) / den6;
+
+  // calculating values at t + h/2
+  // for k3, j3-----------------------------------------------------
+  w1TempHalf2 += 0.5*k1;
+  w2TempHalf2 += 0.5*j1;
+  ang1TempHalf2 += 0.5*w1;
+  ang2TempHalf2 += 0.5*w2;
+
+  var num31 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf2);
+  var num32 = -m2 * g * Math.sin(ang1TempHalf2-2*ang2TempHalf2);
+  var num33 = -2*Math.sin(ang1TempHalf2-ang2TempHalf2)*m2;
+  var num35 = w2TempHalf2*w2TempHalf2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den7 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+
+  var k3 = (num31 + num32 + num33 * num35) / den7;
+
+  var num41 = 2 * Math.sin(ang1TempHalf2-ang2TempHalf2);
+  var num42 = (w1TempHalf2*w1TempHalf2*r1*(m1+m2));
+  var num43 = g * (m1 + m2) * Math.cos(ang1TempHalf2);
+  var num44 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den8 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+
+  var j3 = (num41 * (num42 + num43 + num44)) / den8;
 
   // calculating values for the next theoretical iteration if rk4 weren't used.
-  // This is for the last k4 and j4. Evaluated at time t + h
+  // This is for the last k4 and j4. Evaluated at time t + h ----------------------------------
   w1Temp += k1;
   w2Temp += j1;
   ang1Temp += w1; // might adjust by w1Temp
