@@ -430,22 +430,22 @@ function rk4() {
   let w1TempHalf2 = w1, w2TempHalf2 = w2, ang1TempHalf2 = ang1, ang2TempHalf2 = ang2; // for k3, j3
 
   // next iteration for w1------------------------------------------
-  var num1 = -g * (2 * m1 + m2) * Math.sin(ang1);
-  var num2 = -m2 * g * Math.sin(ang1-2*ang2);
-  var num3 = -2*Math.sin(ang1-ang2)*m2;
-  var num4 = w2*w2*r2+w1*w1*r1*Math.cos(ang1-ang2);
-  var den1 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+  var num11 = -g * (2 * m1 + m2) * Math.sin(ang1);
+  var num12 = -m2 * g * Math.sin(ang1-2*ang2);
+  var num13 = -2*Math.sin(ang1-ang2)*m2;
+  var num14 = w2*w2*r2+w1*w1*r1*Math.cos(ang1-ang2);
+  var den11 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
 
-  var k1 = (num1 + num2 + num3 * num4) / den1;
+  var k1 = (num11 + num12 + num13 * num14) / den11;
 
   // next iteration for w2------------------------------------------
-  var num8 = 2 * Math.sin(ang1-ang2);
-  var num9 = (w1*w1*r1*(m1+m2));
-  var num10 = g * (m1 + m2) * Math.cos(ang1);
-  var num11 = w2*w2*r2*m2*Math.cos(ang1-ang2);
-  var den2 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+  var num15 = 2 * Math.sin(ang1-ang2);
+  var num16 = (w1*w1*r1*(m1+m2));
+  var num17 = g * (m1 + m2) * Math.cos(ang1);
+  var num18 = w2*w2*r2*m2*Math.cos(ang1-ang2);
+  var den12 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
 
-  var j1 = (num8 * (num9 + num10 + num11)) / den2;
+  var j1 = (num15 * (num16 + num17 + num18)) / den12;
 
   // calculating values at t + h/2
   // for k2, j2-----------------------------------------------------
@@ -457,18 +457,18 @@ function rk4() {
   var num21 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf1);
   var num22 = -m2 * g * Math.sin(ang1TempHalf1-2*ang2TempHalf1);
   var num23 = -2*Math.sin(ang1TempHalf1-ang2TempHalf1)*m2;
-  var num5 = w2TempHalf1*w2TempHalf1*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1TempHalf1-ang2TempHalf1);
-  var den5 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+  var num24 = w2TempHalf1*w2TempHalf1*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den21 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
 
-  var k2 = (num21 + num22 + num23 * num5) / den5;
+  var k2 = (num21 + num22 + num23 * num24) / den21;
 
-  var num28 = 2 * Math.sin(ang1TempHalf1-ang2TempHalf1);
-  var num29 = (w1TempHalf1*w1TempHalf1*r1*(m1+m2));
-  var num30 = g * (m1 + m2) * Math.cos(ang1TempHalf1);
-  var num12 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1TempHalf1-ang2TempHalf1);
-  var den6 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+  var num25 = 2 * Math.sin(ang1TempHalf1-ang2TempHalf1);
+  var num26 = (w1TempHalf1*w1TempHalf1*r1*(m1+m2));
+  var num27 = g * (m1 + m2) * Math.cos(ang1TempHalf1);
+  var num28 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den22 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
 
-  var j2 = (num28 * (num29 + num30 + num12)) / den6;
+  var j2 = (num25 * (num26 + num27 + num28)) / den22;
 
   // calculating values at t + h/2
   // for k3, j3-----------------------------------------------------
@@ -480,18 +480,18 @@ function rk4() {
   var num31 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf2);
   var num32 = -m2 * g * Math.sin(ang1TempHalf2-2*ang2TempHalf2);
   var num33 = -2*Math.sin(ang1TempHalf2-ang2TempHalf2)*m2;
-  var num35 = w2TempHalf2*w2TempHalf2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1TempHalf2-ang2TempHalf2);
-  var den7 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+  var num34 = w2TempHalf2*w2TempHalf2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den31 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
 
-  var k3 = (num31 + num32 + num33 * num35) / den7;
+  var k3 = (num31 + num32 + num33 * num34) / den31;
 
-  var num41 = 2 * Math.sin(ang1TempHalf2-ang2TempHalf2);
-  var num42 = (w1TempHalf2*w1TempHalf2*r1*(m1+m2));
-  var num43 = g * (m1 + m2) * Math.cos(ang1TempHalf2);
-  var num44 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1TempHalf2-ang2TempHalf2);
-  var den8 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+  var num35 = 2 * Math.sin(ang1TempHalf2-ang2TempHalf2);
+  var num36 = (w1TempHalf2*w1TempHalf2*r1*(m1+m2));
+  var num37 = g * (m1 + m2) * Math.cos(ang1TempHalf2);
+  var num38 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den33 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
 
-  var j3 = (num41 * (num42 + num43 + num44)) / den8;
+  var j3 = (num35 * (num36 + num37 + num38)) / den33;
 
   // calculating values for the next theoretical iteration if rk4 weren't used.
   // This is for the last k4 and j4. Evaluated at time t + h ----------------------------------
@@ -500,19 +500,19 @@ function rk4() {
   ang1Temp += w1;
   ang2Temp += w2;
   
-  var num15 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
-  var num16 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
-  var num17 = -2*Math.sin(ang1Temp-ang2Temp)*m2;
-  var num7 = w2Temp*w2Temp*r2+(w1Temp + k3)*(w1Temp + k3)*r1*Math.cos(ang1Temp-ang2Temp);
-  var den3 = r1 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
-  var k4 = (num15 + num16 + num17 * num7) / den3;
+  var num41 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
+  var num42 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
+  var num43 = -2*Math.sin(ang1Temp-ang2Temp)*m2;
+  var num44 = w2Temp*w2Temp*r2+(w1Temp + k3)*(w1Temp + k3)*r1*Math.cos(ang1Temp-ang2Temp);
+  var den41 = r1 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var k4 = (num41 + num42 + num43 * num44) / den41;
 
-  var num18 = 2 * Math.sin(ang1Temp-ang2Temp);
-  var num19 = (w1Temp*w1Temp*r1*(m1+m2));
-  var num20 = g * (m1 + m2) * Math.cos(ang1Temp);
-  var num14 = (w2Temp + j3)*(w2Temp + j3)*r2*m2*Math.cos(ang1Temp-ang2Temp);
-  var den4 = r2 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
-  var j4 = (num18 * (num19 + num20 + num14)) / den4;
+  var num45 = 2 * Math.sin(ang1Temp-ang2Temp);
+  var num46 = (w1Temp*w1Temp*r1*(m1+m2));
+  var num47 = g * (m1 + m2) * Math.cos(ang1Temp);
+  var num48 = (w2Temp + j3)*(w2Temp + j3)*r2*m2*Math.cos(ang1Temp-ang2Temp);
+  var den42 = r2 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var j4 = (num45 * (num46 + num47 + num48)) / den42;
 
   //get position based on angle
   x1 = r1 * Math.sin(ang1);
