@@ -159,8 +159,14 @@ function randomSetup(e){
 }
 
 function update(){
-  calculate();
-  //rk4();
+  if (document.getElementById('euler').selected) {
+    calculate();
+  }
+
+  if (document.getElementById('rk4').selected) {
+    rk4();
+  }
+  
   ctx.clearRect(0 - w/2, 0 - h/2, w, h);
   drawLines();
   drawSphere(x1, y1);
@@ -253,6 +259,10 @@ function planetChoice() {
   }
   else if (planetSelect.selectedIndex == 7){
     g = parseFloat(document.getElementById('neptune').value) / 3600;
+    return g;
+  }
+  else if (planetSelect.selectedIndex == 8) {
+    g = parseFloat(document.getElementById('moon').value) / 3600;
     return g;
   }
 }
@@ -414,6 +424,8 @@ function resetValues(){
 
 //Fourth Order Runge-Kutta Method for approximating the next iteration---------------------------------------------------------------
 function rk4() {
+  
+  let w1Temp = w1, w2Temp = w2, ang1Temp = ang1, ang2Temp = ang2;
 
   // next iteration for w1-----------------------------------------
   var num1 = -g * (2 * m1 + m2) * Math.sin(ang1);
@@ -424,11 +436,9 @@ function rk4() {
 
   var k1 = (num1 + num2 + num3 * num4) / den1;
   var num5 = w2*w2*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1-ang2);
-  var k2 = (0.5) * (num1 + num2 + num3 * num5) / den1;
+  var k2 = (0.5) * (num1 + num2 + num3 * num5) / den1; // maybe by a factor of 1.5 since it's evaluated at t + h/2
   var num6 = w2*w2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1-ang2);
-  var k3 = (0.5) * (num1 + num2 + num3 * num6) / den1;
-  var num7 = w2*w2*r2+(w1 + k3)*(w1 + k3)*r1*Math.cos(ang1-ang2);
-  var k4 = (num1 + num2 + num3 * num7) / den1;
+  var k3 = (0.5) * (num1 + num2 + num3 * num6) / den1; // maybe by a factor of 1.5 since it's evaluated at t + h/2
 
   // next iteration for w2----------------------------------------
   var num8 = 2 * Math.sin(ang1-ang2);
@@ -439,11 +449,30 @@ function rk4() {
 
   var j1 = (num8 * (num9 + num10 + num11)) / den2;
   var num12 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1-ang2);
-  var j2 = (0.5) * (num8 * (num9 + num10 + num12)) / den2;
+  var j2 = (0.5) * (num8 * (num9 + num10 + num12)) / den2; // maybe by a factor of 1.5 since it's evaluated at t + h/2
   var num13 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1-ang2);
-  var j3 = (0.5) * (num8 * (num9 + num10 + num13)) / den2;
-  var num14 = (w2 + j3)*(w2 + j3)*r2*m2*Math.cos(ang1-ang2);
-  var j4 = (num8 * (num9 + num10 + num14)) / den2;
+  var j3 = (0.5) * (num8 * (num9 + num10 + num13)) / den2; // maybe by a factor of 1.5 since it's evaluated at t + h/2
+
+  // calculating values for the next theoretical iteration if rk4 weren't used.
+  // This is for the last k4 and j4. Evaluated at time t + h
+  w1Temp += k1;
+  w2Temp += j1;
+  ang1Temp += w1; // might adjust by w1Temp
+  ang2Temp += w2; // might adjust by w2Temp
+  
+  var num15 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
+  var num16 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
+  var num17 = -2*Math.sin(ang1Temp-ang2Temp)*m2;
+  var num7 = w2Temp*w2Temp*r2+(w1Temp + k3)*(w1Temp + k3)*r1*Math.cos(ang1Temp-ang2Temp);
+  var den3 = r1 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var k4 = (num15 + num16 + num17 * num7) / den3;
+
+  var num18 = 2 * Math.sin(ang1Temp-ang2Temp);
+  var num19 = (w1Temp*w1Temp*r1*(m1+m2));
+  var num20 = g * (m1 + m2) * Math.cos(ang1Temp);
+  var num14 = (w2Temp + j3)*(w2Temp + j3)*r2*m2*Math.cos(ang1Temp-ang2Temp);
+  var den4 = r2 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var j4 = (num18 * (num19 + num20 + num14)) / den4;
 
   //get position based on angle
   x1 = r1 * Math.sin(ang1);
