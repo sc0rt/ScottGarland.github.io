@@ -10,7 +10,7 @@
     <div class="leftSide">
         <form id="valueForm">
           <fieldset id="title">
-            <legend>Initial Values</legend>
+            <legend id="formTitle">Initial Values</legend>
 
             <legend>Pendulum 1</legend>
             <ul>
@@ -44,12 +44,13 @@
               </li>
             </ul>
 
-            <div>
+            <legend>General</legend>
+            <div class="general">
               <label id="traceSwitchLabel">Trace On</label>
               <input type="checkbox" id="traceSwitch" checked><br>
            </div>
-            
-            <div>
+
+            <div class="general">
               <label for="color" id="colorLabel">Trace Color</label>
               <select id="color">
 
@@ -63,7 +64,7 @@
              </select>
            </div>
 
-          <div>
+          <div class="general">
             <label>Gravitational Constant (m/s^2)</label>
             <select id='planet'>
               <option id='mercury' value=3.7>Mercury (3.7)</option>
@@ -77,19 +78,19 @@
             </select>
           </div>
 
-            <div>
-              <ul>
+            <div id="buttonWrap">
+              <ul id="buttons">
                 <li class="buttonList">
-                  <button id='start' value='Start'>Start</button>
+                  <button id='start' value='Start'><span class="btnText">Start</span></button>
                 </li>
                 <li class="buttonList">
-                  <button id='pause' value='Pause'>Pause</button>
+                  <button id='pause' value='Pause'><span class="btnText" id="pause">Pause</span></button>
                 </li>
                 <li class="buttonList">
-                  <button id='reset' value='Reset'>Reset</button>
+                  <button id='reset' value='Reset'><span class="btnText">Reset</span></button>
                 </li>
                 <li class="buttonList">
-                  <button id='random' value='Random'>Random</button>
+                  <button id='random' value='Random'><span class="btnText">Random</span></button>
                 </li>
               </ul>
             </div>
