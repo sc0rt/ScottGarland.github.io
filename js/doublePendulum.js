@@ -12,9 +12,13 @@ var startButton = document.getElementById('start');
 var randomButton = document.getElementById('random');
 var resetButton = document.getElementById('reset');
 var pauseButton = document.getElementById('pause');
+var dwnldButton = document.getElementById('download');
 var text = document.getElementById('pause');
 var planetSelect = document.getElementById('planet');
 pauseButton.disabled = true; //disables pause button until start is pressed
+pauseButton.style.opacity = 0.5;
+
+var method; //simulation method to use
 
 var w = canvas.width;
 var h = canvas.height;
@@ -53,6 +57,11 @@ var lastX = initialLastX;
 var lastY = initialLastY;
 
 var animation;
+var startTime = new Date();
+var previousTime = startTime;
+
+//first row of csv
+let csvContent = "data:text/csv;charset=utf-8," + "Time (s), Angle 1 (deg), Angle 2 (deg)\n";
 
 //when the images are loaded, the buttons will work.  Prevents image flickering at the beginning
 sphere.onload = function(){
@@ -73,12 +82,26 @@ pauseButton.addEventListener('click', (e)=>{
     cancelAnimationFrame(animation);
     text.innerHTML = 'Resume';
     text.className= "btnText";
+    dwnldButton.disabled = false;
+    dwnldButton.style.opacity = 1;
   }
   else{
     update();
     text.innerHTML = 'Pause';
-    text.className= "btnText"
+    text.className= "btnText";
+    dwnldButton.disabled = true;
+    dwnldButton.style.opacity = 0.5; //disable download when simulation running
   }
+});
+
+dwnldButton.addEventListener('click', (e)=>{
+  e.preventDefault();
+  //download data from csvContent
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "Pendulum data.csv");
+  link.click();
 });
 
 //validate the form------------------------------------------------------------------------------------------
@@ -130,6 +153,10 @@ function setup(e){
   text.innerHTML = 'Pause';
   text.className = "btnText";
   pauseButton.disabled = false;
+  pauseButton.style.opacity = 1;
+  dwnldButton.disabled = true;
+  dwnldButton.style.opacity = 0.5; //make it look disabled
+
   loadSphere();
   resetValues();
   drawBackground();
@@ -144,9 +171,13 @@ function randomSetup(e){
   text.innerHTML = 'Pause';
   text.className = "btnText";
   pauseButton.disabled = false;
+  pauseButton.style.opacity = 1;
+  dwnldButton.disabled = true;
+  dwnldButton.style.opacity = 0.5;
 
   var inputs = document.forms["valueForm"].elements['input'];
-  //Changes all border clors to black in case the form was validated multiple times
+  //Changes all border clors to black in case the form was validated before hitting random button
+  //(random setup does not need its own validation)
   for(i = 0; i < inputs.length; i++ ){
     inputs[i].style.border = '1.5px solid #282828';
   }
@@ -159,14 +190,8 @@ function randomSetup(e){
 }
 
 function update(){
-  if (document.getElementById('euler').selected) {
-    calculate();
-  }
-
-  if (document.getElementById('rk4').selected) {
-    rk4();
-  }
-  
+  if(method == 'euler'){calculate();}
+  else if(method == 'rk4'){rk4();}
   ctx.clearRect(0 - w/2, 0 - h/2, w, h);
   drawLines();
   drawSphere(x1, y1);
@@ -204,9 +229,6 @@ function calculate(){
   x2 = x1 + r2 * Math.sin(ang2);
   y2 = (y1 - r2 * Math.cos(ang2));
 
-  //this will print the coordinates as calculated
-  //console.log("pos " + x2 + " " + y2);
-
   //reverse the y-coordinates so that the pendulum is drawn in the right place
   y1 *= -1;
   y2 *= -1;
@@ -222,9 +244,169 @@ function calculate(){
   w2 += acc2;
   ang1 += w1;
   ang2 += w2;
+
+  submitData();
+
+}
+
+//Fourth Order Runge-Kutta Method for approximating the next iteration---------------------------------------------------------------
+function rk4() {
+
+  let w1Temp = w1, w2Temp = w2, ang1Temp = ang1, ang2Temp = ang2; // for k4, j4
+  let w1TempHalf1 = w1, w2TempHalf1 = w2, ang1TempHalf1 = ang1, ang2TempHalf1 = ang2; // for k2, j2
+  let w1TempHalf2 = w1, w2TempHalf2 = w2, ang1TempHalf2 = ang1, ang2TempHalf2 = ang2; // for k3, j3
+
+  // next iteration for w1------------------------------------------
+  var num11 = -g * (2 * m1 + m2) * Math.sin(ang1);
+  var num12 = -m2 * g * Math.sin(ang1-2*ang2);
+  var num13 = -2*Math.sin(ang1-ang2)*m2;
+  var num14 = w2*w2*r2+w1*w1*r1*Math.cos(ang1-ang2);
+  var den11 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+
+  var k1 = (num11 + num12 + num13 * num14) / den11;
+
+  // next iteration for w2------------------------------------------
+  var num15 = 2 * Math.sin(ang1-ang2);
+  var num16 = (w1*w1*r1*(m1+m2));
+  var num17 = g * (m1 + m2) * Math.cos(ang1);
+  var num18 = w2*w2*r2*m2*Math.cos(ang1-ang2);
+  var den12 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
+
+  var j1 = (num15 * (num16 + num17 + num18)) / den12;
+
+  // calculating values at t + h/2
+  // for k2, j2-----------------------------------------------------
+  w1TempHalf1 += 0.5*k1;
+  w2TempHalf1 += 0.5*j1;
+  ang1TempHalf1 += 0.5*w1TempHalf1;
+  ang2TempHalf1 += 0.5*w2TempHalf1;
+
+  var num21 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf1);
+  var num22 = -m2 * g * Math.sin(ang1TempHalf1-2*ang2TempHalf1);
+  var num23 = -2*Math.sin(ang1TempHalf1-ang2TempHalf1)*m2;
+  var num24 = w2TempHalf1*w2TempHalf1*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den21 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+
+  var k2 = (num21 + num22 + num23 * num24) / den21;
+
+  var num25 = 2 * Math.sin(ang1TempHalf1-ang2TempHalf1);
+  var num26 = (w1TempHalf1*w1TempHalf1*r1*(m1+m2));
+  var num27 = g * (m1 + m2) * Math.cos(ang1TempHalf1);
+  var num28 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1TempHalf1-ang2TempHalf1);
+  var den22 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
+
+  var j2 = (num25 * (num26 + num27 + num28)) / den22;
+
+  // calculating values at t + h/2
+  // for k3, j3-----------------------------------------------------
+  w1TempHalf2 += 0.5*k1;
+  w2TempHalf2 += 0.5*j1;
+  ang1TempHalf2 += 0.5*w1TempHalf2;
+  ang2TempHalf2 += 0.5*w2TempHalf2;
+
+  var num31 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf2);
+  var num32 = -m2 * g * Math.sin(ang1TempHalf2-2*ang2TempHalf2);
+  var num33 = -2*Math.sin(ang1TempHalf2-ang2TempHalf2)*m2;
+  var num34 = w2TempHalf2*w2TempHalf2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den31 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+
+  var k3 = (num31 + num32 + num33 * num34) / den31;
+
+  var num35 = 2 * Math.sin(ang1TempHalf2-ang2TempHalf2);
+  var num36 = (w1TempHalf2*w1TempHalf2*r1*(m1+m2));
+  var num37 = g * (m1 + m2) * Math.cos(ang1TempHalf2);
+  var num38 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1TempHalf2-ang2TempHalf2);
+  var den33 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
+
+  var j3 = (num35 * (num36 + num37 + num38)) / den33;
+
+  // calculating values for the next theoretical iteration if rk4 weren't used.
+  // This is for the last k4 and j4. Evaluated at time t + h ----------------------------------
+  w1Temp += k1;
+  w2Temp += j1;
+  ang1Temp += w1Temp;
+  ang2Temp += w2Temp;
+
+  var num41 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
+  var num42 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
+  var num43 = -2*Math.sin(ang1Temp-ang2Temp)*m2;
+  var num44 = w2Temp*w2Temp*r2+(w1Temp + k3)*(w1Temp + k3)*r1*Math.cos(ang1Temp-ang2Temp);
+  var den41 = r1 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var k4 = (num41 + num42 + num43 * num44) / den41;
+
+  var num45 = 2 * Math.sin(ang1Temp-ang2Temp);
+  var num46 = (w1Temp*w1Temp*r1*(m1+m2));
+  var num47 = g * (m1 + m2) * Math.cos(ang1Temp);
+  var num48 = (w2Temp + j3)*(w2Temp + j3)*r2*m2*Math.cos(ang1Temp-ang2Temp);
+  var den42 = r2 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
+  var j4 = (num45 * (num46 + num47 + num48)) / den42;
+
+  //get position based on angle
+  x1 = r1 * Math.sin(ang1);
+  y1 = (-r1 * Math.cos(ang1));
+  x2 = x1 + r2 * Math.sin(ang2);
+  y2 = (y1 - r2 * Math.cos(ang2));
+
+  //reverse the y-coordinates so that the pendulum is drawn in the right place
+  y1 *= -1;
+  y2 *= -1;
+
+  //multiply by 100 to scale the position in meters to pixels for aesthetics
+  x1 *= 100;
+  y1 *= 100;
+  x2 *= 100;
+  y2 *= 100;
+
+  w1 += (1 / 6) * (k1 + 2*k2 + 2*k3 + k4);
+  w2 += (1 / 6) * (j1 + 2*j2 + 2*j3 + j4);
+  ang1 += w1;
+  ang2 += w2;
+
+  submitData();
+
+}
+
+//resusable function for each iteration method to allow data to be submitted to csv file
+function submitData() {
+  //***calculate time elapsed***
+  var endTime = new Date();
+  //get the total time the sim has been running
+  var timeDiff = endTime - startTime; //in ms
+  // strip the ms
+  timeDiff /= 1000;
+
+  //every 0.1 second, submit data to csv file;
+  if((endTime - previousTime) >= 100){
+    // get # seconds rounded down to 1 decimal place
+    var seconds = (Math.floor(timeDiff * 10)) /10;
+
+    var degAng1 = ang1 * (180 / Math.PI);
+    var degAng2 = ang2 * (180 / Math.PI);
+
+    //how many full rotations the pendulum has done
+    var rotations1 = Math.abs(Math.floor(degAng1 / 360));
+    var rotations2 = Math.abs(Math.floor(degAng2 / 360));
+
+    //make sure the angles are between 0 and 360 deg by adding or subtracting rotations
+    if(degAng1 > 360){degAng1 -= rotations1 * 360;}
+    if(degAng1 < 0){degAng1 += rotations1 * 360;}
+    if(degAng2 > 360){degAng2 -= rotations2 * 360;}
+    if(degAng2 < 0){degAng2 += rotations2 * 360;}
+
+    addData(seconds, degAng1.toFixed(2), degAng2.toFixed(2)); //add data to csv string
+
+    previousTime = endTime;
+  }
+}
+
+//add data to csv file--------------------------------------------------------------------------------------------------
+function addData(time, ang1, ang2){
+  csvContent += time + "," + ang1 + "," + ang2 + "\n";
 }
 
 // selects the appropriate gravitational acceleration based on user planet selection-----------------------------------------------
+//all accel divided by 60*60 because the sim runs ~60fps and accel is m/s^2
+//this means that 1 real second is 60 animation seconds, so accel must be scaled 60x slower
 function planetChoice() {
 
   // indeces for planets in order: 0 = Mercury ... 7 = Neptune
@@ -261,9 +443,9 @@ function planetChoice() {
     g = parseFloat(document.getElementById('neptune').value) / 3600;
     return g;
   }
-  else if (planetSelect.selectedIndex == 8) {
-    g = parseFloat(document.getElementById('moon').value) / 3600;
-    return g;
+  else if (planetSelect.selectedIndex == 8){
+      g = parseFloat(document.getElementById('moon').value) / 3600;
+      return g;
   }
 }
 
@@ -286,6 +468,10 @@ function setRandomValues(){
   g = planetChoice();
   lastX = initialLastX;
   lastY = initialLastY;
+  csvContent = "data:text/csv;charset=utf-8," + "Time (s), Angle 1 (deg), Angle 2 (deg)\n";
+  startTime = new Date();
+  previousTime = startTime;
+  method = document.getElementById('iteration').value;
 
   // displaying the random value to 2 decimal places into the html form
   document.getElementById('m1').value = m1.toFixed(2);
@@ -294,39 +480,48 @@ function setRandomValues(){
   document.getElementById('r2').value = r2.toFixed(2);
   document.getElementById('ang1').value = (ang1 * 180/(Math.PI)).toFixed(2);
   document.getElementById('ang2').value = (ang2 * 180/(Math.PI)).toFixed(2);
+
+  var degAng1 = ang1 * (180 / Math.PI);
+  var degAng2 = ang2 * (180 / Math.PI);
+
+  //make sure the angles are between 0 and 360 deg;
+  if(degAng1 > 360){degAng1 -= 360;}
+  if(degAng1 < 0){degAng1 += 360;}
+  if(degAng2 > 360){degAng2 -= 360;}
+  if(degAng2 < 0){degAng2 += 360;}
+  //add initial data to csv file
+  addData(0, degAng1.toFixed(2), degAng2.toFixed(2));
 }
 
 //load correct sphere images based on user choice--------------------------------------------------------------------------------
 function loadSphere(){
 
-  var name = color.value;
+  var name = color.value; //from user input
 
   switch(name){
-    case "red"://red
+    case "red":
       sphere.src = "../img/sphere red.png";
       break;
-    case "orange"://orange
+    case "orange":
       sphere.src = "../img/sphere orange.png";
       break;
-    case "yellow"://yellow
+    case "yellow":
       sphere.src = "../img/sphere yellow.png";
       break;
-    case "blue": //blue
+    case "blue":
       sphere.src = "../img/sphere.png";
       break;
-    case "green"://green
+    case "green":
       sphere.src = "../img/sphere green.png";
       break;
-    case "violet"://violet
+    case "violet":
       sphere.src = "../img/sphere purple.png";
       break;
-    case "pink"://pink
+    case "pink":
       sphere.src = "../img/sphere pink.png";
       break;
   }
-  console.log(sphere.src);
 }
-
 
 //sets background to black------------------------------------------------------------------------------------------------
 function drawBackground(){
@@ -409,129 +604,29 @@ function resetValues(){
   r2 = parseFloat(document.getElementById('r2').value);
   ang1 = parseFloat(document.getElementById('ang1').value) * (Math.PI)/180;
   ang2 = parseFloat(document.getElementById('ang2').value) * (Math.PI)/180;
-  x1; // x co-ordinate of m1
-  y1; // y co-ordinate of m1
-  x2; // x co-ordinate of m2
-  y2; // y co-ordinate of m2
-  w1 = 0; // angular velocity of m1
-  w2 = 0; // angular velocity of m2
-  acc1; // angluar acceleration of m1
-  acc2; // angluar acceleration of m2
-  g = planetChoice(); // gravitational constant (scaled to 60 fps)
+  x1;
+  y1;
+  x2;
+  y2;
+  w1 = 0;
+  w2 = 0;
+  acc1;
+  acc2;
+  g = planetChoice();
   lastX = initialLastX;
   lastY = initialLastY;
-}
+  csvContent = "data:text/csv;charset=utf-8," + "Time (s), Angle 1 (deg), Angle 2 (deg)\n";
+  startTime = new Date();
+  previousTime = startTime;
+  method = document.getElementById('iteration').value;
 
-//Fourth Order Runge-Kutta Method for approximating the next iteration---------------------------------------------------------------
-function rk4() {
-  
-  let w1Temp = w1, w2Temp = w2, ang1Temp = ang1, ang2Temp = ang2; // for k4, j4
-  let w1TempHalf1 = w1, w2TempHalf1 = w2, ang1TempHalf1 = ang1, ang2TempHalf1 = ang2; // for k2, j2
-  let w1TempHalf2 = w1, w2TempHalf2 = w2, ang1TempHalf2 = ang1, ang2TempHalf2 = ang2; // for k3, j3
+  var degAng1 = ang1 * (180 / Math.PI);
+  var degAng2 = ang2 * (180 / Math.PI);
 
-  // next iteration for w1------------------------------------------
-  var num11 = -g * (2 * m1 + m2) * Math.sin(ang1);
-  var num12 = -m2 * g * Math.sin(ang1-2*ang2);
-  var num13 = -2*Math.sin(ang1-ang2)*m2;
-  var num14 = w2*w2*r2+w1*w1*r1*Math.cos(ang1-ang2);
-  var den11 = r1 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
-
-  var k1 = (num11 + num12 + num13 * num14) / den11;
-
-  // next iteration for w2------------------------------------------
-  var num15 = 2 * Math.sin(ang1-ang2);
-  var num16 = (w1*w1*r1*(m1+m2));
-  var num17 = g * (m1 + m2) * Math.cos(ang1);
-  var num18 = w2*w2*r2*m2*Math.cos(ang1-ang2);
-  var den12 = r2 * (2*m1+m2-m2*Math.cos(2*ang1-2*ang2));
-
-  var j1 = (num15 * (num16 + num17 + num18)) / den12;
-
-  // calculating values at t + h/2
-  // for k2, j2-----------------------------------------------------
-  w1TempHalf1 += 0.5*k1;
-  w2TempHalf1 += 0.5*j1;
-  ang1TempHalf1 += 0.5*w1;
-  ang2TempHalf1 += 0.5*w2;
-  
-  var num21 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf1);
-  var num22 = -m2 * g * Math.sin(ang1TempHalf1-2*ang2TempHalf1);
-  var num23 = -2*Math.sin(ang1TempHalf1-ang2TempHalf1)*m2;
-  var num24 = w2TempHalf1*w2TempHalf1*r2+(w1 + k1/2)*(w1 + k1/2)*r1*Math.cos(ang1TempHalf1-ang2TempHalf1);
-  var den21 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
-
-  var k2 = (num21 + num22 + num23 * num24) / den21;
-
-  var num25 = 2 * Math.sin(ang1TempHalf1-ang2TempHalf1);
-  var num26 = (w1TempHalf1*w1TempHalf1*r1*(m1+m2));
-  var num27 = g * (m1 + m2) * Math.cos(ang1TempHalf1);
-  var num28 = (w2 + j1/2)*(w2 + j1/2)*r2*m2*Math.cos(ang1TempHalf1-ang2TempHalf1);
-  var den22 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf1-2*ang2TempHalf1));
-
-  var j2 = (num25 * (num26 + num27 + num28)) / den22;
-
-  // calculating values at t + h/2
-  // for k3, j3-----------------------------------------------------
-  w1TempHalf2 += 0.5*k1;
-  w2TempHalf2 += 0.5*j1;
-  ang1TempHalf2 += 0.5*w1;
-  ang2TempHalf2 += 0.5*w2;
-
-  var num31 = -g * (2 * m1 + m2) * Math.sin(ang1TempHalf2);
-  var num32 = -m2 * g * Math.sin(ang1TempHalf2-2*ang2TempHalf2);
-  var num33 = -2*Math.sin(ang1TempHalf2-ang2TempHalf2)*m2;
-  var num34 = w2TempHalf2*w2TempHalf2*r2+(w1 + k2/2)*(w1 + k2/2)*r1*Math.cos(ang1TempHalf2-ang2TempHalf2);
-  var den31 = r1 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
-
-  var k3 = (num31 + num32 + num33 * num34) / den31;
-
-  var num35 = 2 * Math.sin(ang1TempHalf2-ang2TempHalf2);
-  var num36 = (w1TempHalf2*w1TempHalf2*r1*(m1+m2));
-  var num37 = g * (m1 + m2) * Math.cos(ang1TempHalf2);
-  var num38 = (w2 + j2/2)*(w2 + j2/2)*r2*m2*Math.cos(ang1TempHalf2-ang2TempHalf2);
-  var den33 = r2 * (2*m1+m2-m2*Math.cos(2*ang1TempHalf2-2*ang2TempHalf2));
-
-  var j3 = (num35 * (num36 + num37 + num38)) / den33;
-
-  // calculating values for the next theoretical iteration if rk4 weren't used.
-  // This is for the last k4 and j4. Evaluated at time t + h ----------------------------------
-  w1Temp += k1;
-  w2Temp += j1;
-  ang1Temp += w1;
-  ang2Temp += w2;
-  
-  var num41 = -g * (2 * m1 + m2) * Math.sin(ang1Temp);
-  var num42 = -m2 * g * Math.sin(ang1Temp-2*ang2Temp);
-  var num43 = -2*Math.sin(ang1Temp-ang2Temp)*m2;
-  var num44 = w2Temp*w2Temp*r2+(w1Temp + k3)*(w1Temp + k3)*r1*Math.cos(ang1Temp-ang2Temp);
-  var den41 = r1 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
-  var k4 = (num41 + num42 + num43 * num44) / den41;
-
-  var num45 = 2 * Math.sin(ang1Temp-ang2Temp);
-  var num46 = (w1Temp*w1Temp*r1*(m1+m2));
-  var num47 = g * (m1 + m2) * Math.cos(ang1Temp);
-  var num48 = (w2Temp + j3)*(w2Temp + j3)*r2*m2*Math.cos(ang1Temp-ang2Temp);
-  var den42 = r2 * (2*m1+m2-m2*Math.cos(2*ang1Temp-2*ang2Temp));
-  var j4 = (num45 * (num46 + num47 + num48)) / den42;
-
-  //get position based on angle
-  x1 = r1 * Math.sin(ang1);
-  y1 = (-r1 * Math.cos(ang1));
-  x2 = x1 + r2 * Math.sin(ang2);
-  y2 = (y1 - r2 * Math.cos(ang2));
-
-  //reverse the y-coordinates so that the pendulum is drawn in the right place
-  y1 *= -1;
-  y2 *= -1;
-
-  //multiply by 100 to scale the position in meters to pixels for aesthetics
-  x1 *= 100;
-  y1 *= 100;
-  x2 *= 100;
-  y2 *= 100;
-
-  w1 += (1 / 6) * (k1 + 2*k2 + 2*k3 + k4);
-  w2 += (1 / 6) * (j1 + 2*j2 + 2*j3 + j4);
-  ang1 += w1;
-  ang2 += w2;
+  //make sure the angles are between 0 and 360 deg;
+  if(degAng1 > 360){degAng1 -= 360;}
+  if(degAng1 < 0){degAng1 += 360;}
+  if(degAng2 > 360){degAng2 -= 360;}
+  if(degAng2 < 0){degAng2 += 360;}
+  addData(0, degAng1.toFixed(2), degAng2.toFixed(2));
 }
