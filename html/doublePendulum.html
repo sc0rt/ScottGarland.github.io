@@ -21,7 +21,7 @@
           <form id="valueForm">
             <fieldset id="title">
               <legend id="formTitle">Initial Values</legend>
-
+  
               <legend>Pendulum 1</legend>
               <ul>
                 <li>
@@ -37,7 +37,7 @@
                   <input type="number" class="textfeild" step="0.01" name="input" id="ang1"/>
                 </li>
               </ul>
-
+  
               <legend>Pendulum 2</legend>
               <ul>
                 <li>
@@ -53,17 +53,17 @@
                   <input type="number" class="textfeild" step="0.01" name="input" id="ang2"/>
                 </li>
               </ul>
-
+  
               <legend>General</legend>
               <div class="general">
                 <label id="traceSwitchLabel">Trace On</label>
                 <input type="checkbox" id="traceSwitch" checked><br>
-            </div>
-
+             </div>
+  
               <div class="general">
                 <label for="color" id="colorLabel">Trace Color</label>
                 <select id="color">
-
+  
                 <option value='red'>Red</option>
                 <option value='orange'>Orange</option>
                 <option value='yellow'>Yellow</option>
@@ -71,9 +71,9 @@
                 <option value='green'>Green</option>
                 <option value='violet'>Violet</option>
                 <option value='pink'>Pink</option>
-              </select>
-            </div>
-
+               </select>
+             </div>
+  
             <div class="general">
               <label>Gravitational Constant (m/s^2)</label>
               <select id='planet'>
@@ -88,17 +88,17 @@
                 <option id='moon' value=1.62>The Moon (1.62)</option>
               </select>
             </div>
-
+  
             <div class="general">
               <label>Iterative Method</label>
               <select id="iteration">
-                <option id="euler">Euler-Cromer</option>
-                <option id="rk4">Runge-Kutta (4th Order)</option>
+                <option id="euler" value='euler'>Euler-Cromer</option>
+                <option id="rk4" value='rk4'>Runge-Kutta (4th Order)</option>
               </select>
             </div>
-
-              <div id="buttonWrap">
-                <ul id="buttons">
+  
+              <div class="buttonWrap">
+                <ul class="buttons">
                   <li class="buttonList">
                     <button id='start' value='Start'><span class="btnText">Start</span></button>
                   </li>
@@ -113,24 +113,23 @@
                   </li>
                 </ul>
               </div>
-
+  
               <div class="buttonWrap">
                 <button id='download' value='Download'><span class="btnText">Download CSV</span></button>
               </div>
-
             </fieldset>
           </form>
       </div><!--end leftSide-->
-
+  
       <div class = "rightSide">
-        <!--creates the game board-->
+        <!--creates the canvas board-->
         <div id="container">
-          <canvas id="canvas2" class="canvas" width="700px" height="680px"></canvas>
-          <canvas id="canvas1" class="canvas" width="700px" height="680px"></canvas>
+          <canvas id="canvas2" class="canvas" width="700px" height="650px"></canvas>
+          <canvas id="canvas1" class="canvas" width="700px" height="650px"></canvas>
         </div>
       </div>
-
-  </div><!--end content-->
+      
+    </div><!--end content-->
     <script type="text/javascript" src="../js/doublePendulum.js"></script>
   </body>
 </html>
