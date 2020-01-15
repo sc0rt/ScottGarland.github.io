@@ -7,118 +7,130 @@
 
   <body>
 
-    <div class="leftSide">
-        <form id="valueForm">
-          <fieldset id="title">
-            <legend id="formTitle">Initial Values</legend>
+    <ul class="topbar">
+      <li class="topLink">
+        <a id='goSignUp' value='goSignUp' href="../html/signup.html"><span class="btnText">Sign Up</span></a>
+      </li>
+      <li class="topLink">
+        <a id='goLogIn' value='goLogIn' href="../html/login.html"><span class="btnText">Log In</span></a>
+      </li>
+    </ul>
 
-            <legend>Pendulum 1</legend>
-            <ul>
-              <li>
-                <label for='mass' class="textLabel">Mass (kg)</label>
-                <input type="number" class="textfield" step="0.01" name="input" id="m1"/>
-              </li>
-              <li>
-                <label for='length' class="textLabel">Rod length (m)</label>
-                <input type="number" class="textfeild" step="0.01" name="input" id="r1"/>
-              </li>
-              <li>
-                <label for='angle' class="textLabel">Angle 1 from vertical (deg)</label>
-                <input type="number" class="textfeild" step="0.01" name="input" id="ang1"/>
-              </li>
-            </ul>
+    <div class="content">
+      <div class="leftSide">
+          <form id="valueForm">
+            <fieldset id="title">
+              <legend id="formTitle">Initial Values</legend>
 
-            <legend>Pendulum 2</legend>
-            <ul>
-              <li>
-                <label for='mass2' class="textLabel">Mass (kg)</label>
-                <input type="number" class="textfield" step="0.01" name="input" id="m2"/>
-              </li>
-              <li>
-                <label for='length2' class="textLabel">Rod length (m)</label>
-                <input type="number" class="textfeild" step="0.01" name="input" id="r2"/>
-              </li>
-              <li>
-                <label for='angle2' class="textLabel">Angle 2 from vertical (deg)</label>
-                <input type="number" class="textfeild" step="0.01" name="input" id="ang2"/>
-              </li>
-            </ul>
-
-            <legend>General</legend>
-            <div class="general">
-              <label id="traceSwitchLabel">Trace On</label>
-              <input type="checkbox" id="traceSwitch" checked><br>
-           </div>
-
-            <div class="general">
-              <label for="color" id="colorLabel">Trace Color</label>
-              <select id="color">
-
-              <option value='red'>Red</option>
-              <option value='orange'>Orange</option>
-              <option value='yellow'>Yellow</option>
-              <option value='blue' selected>Blue</option>
-              <option value='green'>Green</option>
-              <option value='violet'>Violet</option>
-              <option value='pink'>Pink</option>
-             </select>
-           </div>
-
-          <div class="general">
-            <label>Gravitational Constant (m/s^2)</label>
-            <select id='planet'>
-              <option id='mercury' value=3.7>Mercury (3.7)</option>
-              <option id='venus' value=8.87>Venus (8.87)</option>
-              <option id='earth' value=9.807 selected>Earth (9.807)</option>
-              <option id='mars' value=3.711>Mars (3.711)</option>
-              <option id='jupiter' value=24.79>Jupiter (24.79)</option>
-              <option id='saturn' value=10.44>Saturn (10.44)</option>
-              <option id='uranus' value=8.87>Uranus (8.87)</option>
-              <option id='neptune' value=11.15>Neptune (11.15)</option>
-              <option id='moon' value=1.62>The Moon (1.62)</option>
-            </select>
-          </div>
-
-          <div class="general">
-            <label>Iterative Method</label>
-            <select id="iteration">
-              <option id="euler">Euler-Cromer</option>
-              <option id="rk4">Runge-Kutta (4th Order)</option>
-            </select>
-          </div>
-
-            <div id="buttonWrap">
-              <ul id="buttons">
-                <li class="buttonList">
-                  <button id='start' value='Start'><span class="btnText">Start</span></button>
+              <legend>Pendulum 1</legend>
+              <ul>
+                <li>
+                  <label for='mass' class="textLabel">Mass (kg)</label>
+                  <input type="number" class="textfield" step="0.01" name="input" id="m1"/>
                 </li>
-                <li class="buttonList">
-                  <button id='pause' value='Pause'><span class="btnText" id="pause">Pause</span></button>
+                <li>
+                  <label for='length' class="textLabel">Rod length (m)</label>
+                  <input type="number" class="textfeild" step="0.01" name="input" id="r1"/>
                 </li>
-                <li class="buttonList">
-                  <button id='reset' value='Reset'><span class="btnText">Reset</span></button>
-                </li>
-                <li class="buttonList">
-                  <button id='random' value='Random'><span class="btnText">Random</span></button>
+                <li>
+                  <label for='angle' class="textLabel">Angle 1 from vertical (deg)</label>
+                  <input type="number" class="textfeild" step="0.01" name="input" id="ang1"/>
                 </li>
               </ul>
+
+              <legend>Pendulum 2</legend>
+              <ul>
+                <li>
+                  <label for='mass2' class="textLabel">Mass (kg)</label>
+                  <input type="number" class="textfield" step="0.01" name="input" id="m2"/>
+                </li>
+                <li>
+                  <label for='length2' class="textLabel">Rod length (m)</label>
+                  <input type="number" class="textfeild" step="0.01" name="input" id="r2"/>
+                </li>
+                <li>
+                  <label for='angle2' class="textLabel">Angle 2 from vertical (deg)</label>
+                  <input type="number" class="textfeild" step="0.01" name="input" id="ang2"/>
+                </li>
+              </ul>
+
+              <legend>General</legend>
+              <div class="general">
+                <label id="traceSwitchLabel">Trace On</label>
+                <input type="checkbox" id="traceSwitch" checked><br>
             </div>
 
-            <div class="buttonWrap">
-              <button id='download' value='Download'><span class="btnText">Download CSV</span></button>
+              <div class="general">
+                <label for="color" id="colorLabel">Trace Color</label>
+                <select id="color">
+
+                <option value='red'>Red</option>
+                <option value='orange'>Orange</option>
+                <option value='yellow'>Yellow</option>
+                <option value='blue' selected>Blue</option>
+                <option value='green'>Green</option>
+                <option value='violet'>Violet</option>
+                <option value='pink'>Pink</option>
+              </select>
             </div>
 
-          </fieldset>
-        </form>
-    </div><!--end leftSide-->
+            <div class="general">
+              <label>Gravitational Constant (m/s^2)</label>
+              <select id='planet'>
+                <option id='mercury' value=3.7>Mercury (3.7)</option>
+                <option id='venus' value=8.87>Venus (8.87)</option>
+                <option id='earth' value=9.807 selected>Earth (9.807)</option>
+                <option id='mars' value=3.711>Mars (3.711)</option>
+                <option id='jupiter' value=24.79>Jupiter (24.79)</option>
+                <option id='saturn' value=10.44>Saturn (10.44)</option>
+                <option id='uranus' value=8.87>Uranus (8.87)</option>
+                <option id='neptune' value=11.15>Neptune (11.15)</option>
+                <option id='moon' value=1.62>The Moon (1.62)</option>
+              </select>
+            </div>
 
-    <div class = "rightSide">
-      <!--creates the game board-->
-      <div id="container">
-        <canvas id="canvas2" class="canvas" width="700px" height="680px"></canvas>
-        <canvas id="canvas1" class="canvas" width="700px" height="680px"></canvas>
+            <div class="general">
+              <label>Iterative Method</label>
+              <select id="iteration">
+                <option id="euler">Euler-Cromer</option>
+                <option id="rk4">Runge-Kutta (4th Order)</option>
+              </select>
+            </div>
+
+              <div id="buttonWrap">
+                <ul id="buttons">
+                  <li class="buttonList">
+                    <button id='start' value='Start'><span class="btnText">Start</span></button>
+                  </li>
+                  <li class="buttonList">
+                    <button id='pause' value='Pause'><span class="btnText" id="pause">Pause</span></button>
+                  </li>
+                  <li class="buttonList">
+                    <button id='reset' value='Reset'><span class="btnText">Reset</span></button>
+                  </li>
+                  <li class="buttonList">
+                    <button id='random' value='Random'><span class="btnText">Random</span></button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="buttonWrap">
+                <button id='download' value='Download'><span class="btnText">Download CSV</span></button>
+              </div>
+
+            </fieldset>
+          </form>
+      </div><!--end leftSide-->
+
+      <div class = "rightSide">
+        <!--creates the game board-->
+        <div id="container">
+          <canvas id="canvas2" class="canvas" width="700px" height="680px"></canvas>
+          <canvas id="canvas1" class="canvas" width="700px" height="680px"></canvas>
+        </div>
       </div>
-    </div>
+
+  </div><!--end content-->
     <script type="text/javascript" src="../js/doublePendulum.js"></script>
   </body>
 </html>
